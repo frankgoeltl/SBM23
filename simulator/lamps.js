@@ -44,7 +44,8 @@ function applyLampsToDom() {
     el.classList.toggle('flash', (st?.flash || 0) > 0);
     el.classList.toggle('dim', st?.dim || false);
     if (st?.flash) el.style.setProperty('--flash-period', st.flash + 'ms');
-    el.style.background = on ? '#ffaa00' : '#444';
+    el.style.background = on ? '#F5C518' : '#ddd';
+    el.style.borderColor = on ? '#F0A500' : '#bbb';
   });
 }
 

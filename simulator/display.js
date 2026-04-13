@@ -35,26 +35,44 @@ function updateStatus() {
   if (G.machineState === MS_NORMAL_GAMEPLAY) mode += ' / ' + (gmNames[G.gameMode] || '??');
 
   const el = id => document.getElementById(id);
+  const row = id => el(id)?.parentElement;
+  const orig = G.rulesMode === 'original';
+
   el('st-mode').textContent = mode;
   el('st-bonusx').textContent = G.bonusX[p] + 'X';
-  el('st-bonus').textContent = G.currentBonus + 'K';
-  el('st-sbmode').textContent = sbNames[G.silverballMode[p]] || '--';
+
+  // Original: show completions instead of bonus/silverball mode
+  if (orig) {
+    el('st-bonus-label').textContent = 'SBM Completions:';
+    el('st-bonus').textContent = (G.silverballMode[p] - 1);
+    row('st-sbmode').style.display = 'none';
+    row('st-combo').style.display = 'none';
+    row('st-addbonus').style.display = 'none';
+  } else {
+    el('st-bonus-label').textContent = 'Bonus:';
+    el('st-bonus').textContent = G.currentBonus + 'K';
+    row('st-sbmode').style.display = '';
+    el('st-sbmode').textContent = sbNames[G.silverballMode[p]] || '--';
+    row('st-combo').style.display = '';
+    row('st-addbonus').style.display = '';
+
+    let comboText = '--';
+    if (G.altComboPhase === 10) comboText = 'COLLECT!';
+    else if (G.altComboPhase > 0) comboText = 'Phase ' + G.altComboPhase + ' (' + G.altCombosHit + ' hits)';
+    el('st-combo').textContent = comboText;
+
+    let abText = '--';
+    if (G.addedBonusQualified[p]) abText = 'Qualified: ' + G.addedBonusQualified[p] + 'K';
+    else if (G.addedBonusAchieved[p]) abText = 'Achieved: ' + G.addedBonusAchieved[p] + 'K';
+    el('st-addbonus').textContent = abText;
+  }
 
   let litCount = 0;
   if (G.silverballStatus) {
-    for (let i=0;i<15;i++) if ((G.silverballStatus[p][i]&0x0F) >= G.silverballMode[p]) litCount++;
+    const lvl = orig ? G.silverballMode[p] : G.silverballMode[p];
+    for (let i=0;i<15;i++) if ((G.silverballStatus[p][i]&0x0F) >= lvl) litCount++;
   }
   el('st-letters').textContent = litCount + '/15';
-
-  let comboText = '--';
-  if (G.altComboPhase === 10) comboText = 'COLLECT!';
-  else if (G.altComboPhase > 0) comboText = 'Phase ' + G.altComboPhase + ' (' + G.altCombosHit + ' hits)';
-  el('st-combo').textContent = comboText;
-
-  let abText = '--';
-  if (G.addedBonusQualified[p]) abText = 'Qualified: ' + G.addedBonusQualified[p] + 'K';
-  else if (G.addedBonusAchieved[p]) abText = 'Achieved: ' + G.addedBonusAchieved[p] + 'K';
-  el('st-addbonus').textContent = abText;
 
   el('st-kicker').textContent = G.kickerStatus ? 'ON' : 'OFF';
   el('st-tilt').textContent = G.numTiltWarnings + '/' + G.maxTiltWarnings;

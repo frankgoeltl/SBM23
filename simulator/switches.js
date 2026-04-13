@@ -101,12 +101,14 @@ function handleSwitchOriginal(sw) {
       G.toplanePhase = (G.toplanePhase + 1) % 2;
       if (G.spinner1kPhase) { G.spinner1kPhase = G.spinner1kPhase===1?2:1; }
       playSound('50pt');
+      addLog('50pt rebound (lanes toggled)','score');
       break;
 
     // --- THUMPER BUMPERS (100pt) ---
     case SW_LEFT_BUMPER: case SW_RIGHT_BUMPER: case SW_CENTER_BUMPER:
       G.scores[p] += 100;
       playSound('bumper');
+      addLog('Bumper +100','score');
       if (!G.ballFirstSwitch) G.ballFirstSwitch = G.currentTime;
       break;
 
@@ -116,17 +118,18 @@ function handleSwitchOriginal(sw) {
       G.toplanePhase = (G.toplanePhase + 1) % 2;
       if (G.spinner1kPhase) { G.spinner1kPhase = G.spinner1kPhase===1?2:1; }
       playSound('sling');
+      addLog('Slingshot +20 (lanes toggled)','score');
       if (!G.ballFirstSwitch) G.ballFirstSwitch = G.currentTime;
       break;
 
     // --- SPINNERS (1K lit, 100 unlit) ---
-    // Lit by spelling MANIA, toggled by bumpers/slings
     case SW_LEFT_SPINNER: case SW_RIGHT_SPINNER: {
       const spinnerLit = maniaComplete() && (
         (G.spinner1kPhase===1 && sw===SW_LEFT_SPINNER) ||
         (G.spinner1kPhase===2 && sw===SW_RIGHT_SPINNER));
       G.scores[p] += spinnerLit ? 1000 : 100;
       playSound(spinnerLit ? 'spinner_high' : 'spinner_low');
+      addLog('Spinner ' + (spinnerLit ? '(lit) +1K' : '+100'),'score');
       break; }
 
     // --- CENTER HOOP (5K, spots letter, advances bonus X, lights kicker) ---
@@ -256,7 +259,7 @@ function handleSwitchSBM23(sw) {
         playSound('rollover'); G.scores[p] += m * 100;
         const bit = sw===SW_TOP_LEFT ? 0x01 : 0x04;
         if (G.toplaneProgress & bit) { startScoreAnim(m*5000); addLog('Top lane +5K','score'); }
-        else G.scores[p] += m*100;
+        else { G.scores[p] += m*100; addLog('Top lane +200','score'); }
       }
       if (sw===SW_TOP_LEFT) G.toplaneProgress |= 0x01; else G.toplaneProgress |= 0x04;
       if (!G.ballFirstSwitch) G.ballFirstSwitch = G.currentTime;
@@ -269,7 +272,7 @@ function handleSwitchSBM23(sw) {
         addLog('Center Skill Shot! +10K', 'score');
       } else {
         if (G.toplaneProgress & 0x02) { startScoreAnim(m*5000); addLog('Center lane +5K','score'); }
-        else G.scores[p] += m*100;
+        else { G.scores[p] += m*100; addLog('Center lane +100','score'); }
         playSound('rollover');
       }
       G.toplaneProgress |= 0x02;
@@ -284,10 +287,13 @@ function handleSwitchSBM23(sw) {
         addLog('Combo spinner +1.5K','score');
       } else if (G.spinner1kPhase===1 && sw===SW_LEFT_SPINNER) {
         G.scores[p] += m*1000; playSound('spinner_high');
+        addLog('Spinner (lit) +1K','score');
       } else if (G.spinner1kPhase===2 && sw===SW_RIGHT_SPINNER) {
         G.scores[p] += m*1000; playSound('spinner_high');
+        addLog('Spinner (lit) +1K','score');
       } else {
         G.scores[p] += m*100; playSound('spinner_low');
+        addLog('Spinner +100','score');
       }
       break;
 
@@ -300,8 +306,8 @@ function handleSwitchSBM23(sw) {
         addLog('Collected '+G.addedBonusQualified[p]+'K bonus!', 'score');
       }
       if (G.kickerStatus) {
-        if (G.addedBonusQualified[p]) startScoreAnim(m*5000*G.addedBonusQualified[p]);
-        else { startScoreAnim(m*5000); playSound('kicker'); }
+        if (G.addedBonusQualified[p]) { startScoreAnim(m*5000*G.addedBonusQualified[p]); }
+        else { startScoreAnim(m*5000); playSound('kicker'); addLog('Kicker +5K','score'); }
       }
       G.addedBonusQualified[p] = 0;
       if (!G.ballFirstSwitch) G.ballFirstSwitch = G.currentTime;
@@ -326,6 +332,7 @@ function handleSwitchSBM23(sw) {
 
     case SW_LEFT_BUMPER: case SW_RIGHT_BUMPER: case SW_CENTER_BUMPER:
       G.scores[p] += m*100; playSound('bumper');
+      addLog('Bumper +100','score');
       if (!G.ballFirstSwitch) G.ballFirstSwitch = G.currentTime;
       break;
 
@@ -344,10 +351,12 @@ function handleSwitchSBM23(sw) {
       if (G.spinner1kPhase) { G.spinner1kPhase++; if (G.spinner1kPhase>2) G.spinner1kPhase=1; }
       if (G.silverballMode[p] < 5) rotateMania();
       playSound('50pt'); G.scores[p] += m*50;
+      addLog('50pt rebound (lanes toggled)','score');
       break;
 
     case SW_LEFT_SLING: case SW_RIGHT_SLING:
       G.scores[p] += m*10; playSound('sling');
+      addLog('Slingshot +10','score');
       if (!G.ballFirstSwitch) G.ballFirstSwitch = G.currentTime;
       break;
 
@@ -367,6 +376,14 @@ function handleTilt() {
         turnOffAllLamps();
         playSound('tilt');
         addLog('TILT!', 'mode');
+        // Auto-drain after tilt — skip bonus, go straight to ball over
+        setTimeout(() => {
+          if (G.machineState === MS_NORMAL_GAMEPLAY) {
+            addLog('Ball over (no bonus)', 'mode');
+            G.machineState = MS_BALL_OVER;
+            G.stateChanged = true;
+          }
+        }, 1500);
       } else { playSound('tilt_warn'); addLog('Tilt warning ' + G.numTiltWarnings); }
     }
   } else { playSound('tilt_warn'); G.lastTiltWarning = G.currentTime; }
