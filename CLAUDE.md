@@ -66,3 +66,12 @@ Sound effect numbers are defined as `SOUND_EFFECT_*` constants. WAV Trigger file
 - RPU API functions are prefixed with `RPU_` (e.g., `RPU_SetLampState`, `RPU_PushToSolenoidStack`).
 - Time tracking uses `unsigned long` milliseconds from Arduino `millis()`.
 - The main loop calls `RPU_Update(CurrentTime)` every cycle to service hardware interrupts.
+
+## Simulator
+
+A browser-based simulator lives in `simulator/` for testing game rules without hardware. Open `simulator/index.html` in a browser. Two rules modes:
+
+- **Original (1980 Bally)** — factory rules
+- **SBM23 (Custom Rules)** — the full SBM23 ruleset from this codebase
+
+See `simulator/RULES.md` for the complete rulesheet.
