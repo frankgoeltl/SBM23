@@ -126,9 +126,20 @@ const I18N = {
 
 function t(key) { return (I18N[G.lang] && I18N[G.lang][key]) || I18N.en[key] || key; }
 
+function getCookie(name) {
+  const match = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/[$()*+./?[\\\]^{|}]/g, '\\$&') + '=([^;]*)'));
+  return match ? decodeURIComponent(match[1]) : null;
+}
+function setCookie(name, value, days) {
+  const d = new Date();
+  d.setTime(d.getTime() + days * 86400000);
+  document.cookie = name + '=' + encodeURIComponent(value) + ';expires=' + d.toUTCString() + ';path=/;SameSite=Lax';
+}
+
 function setLang(lang) {
   if (lang !== 'en' && lang !== 'de') return;
   G.lang = lang;
+  setCookie('sbm23_lang', lang, 365);
   try { localStorage.setItem('sbm23.lang', lang); } catch(e) {}
   document.documentElement.lang = lang;
   applyI18n();
@@ -212,9 +223,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const urlParams = new URLSearchParams(window.location.search);
   const urlLang = urlParams.get('lang');
   const urlView = urlParams.get('view');
+  const cookieLang = getCookie('sbm23_lang');
   let storedLang = null;
   try { storedLang = localStorage.getItem('sbm23.lang'); } catch(e) {}
-  G.lang = (urlLang === 'en' || urlLang === 'de') ? urlLang : (storedLang === 'de' ? 'de' : 'en');
+  const pick = (urlLang === 'en' || urlLang === 'de') ? urlLang
+             : (cookieLang === 'en' || cookieLang === 'de') ? cookieLang
+             : (storedLang === 'de' ? 'de' : 'en');
+  G.lang = pick;
+  setCookie('sbm23_lang', pick, 365);
   document.documentElement.lang = G.lang;
   buildHomeContent();
   buildMobileNotice();
@@ -936,7 +952,18 @@ ${p('Verantwortlicher im Sinne der DSGVO ist:')}
 ${p('Frank Goeltl<br>Roemersteinstr. 9<br>73230 Kirchheim unter Teck<br>Deutschland<br>E-Mail: <a href="mailto:frg@silverballmania.com" style="color:#D42A80;">frg@silverballmania.com</a>')}
 
 ${sh('2. Umfang der Datenverarbeitung')}
-${p('Dieser Simulator ist eine rein statische Webanwendung. Es werden auf dieser Website <b>keine Cookies gesetzt</b>, <b>keine Tracking-Tools</b> eingesetzt, <b>keine Analyse-Dienste</b> genutzt und <b>keine personenbezogenen Daten aktiv erhoben</b> oder verarbeitet. S\u00e4mtliche Schriftarten (Oswald, Source Serif 4, Space Mono) werden lokal vom Server ausgeliefert; es findet keine Verbindung zu Google Fonts oder anderen Drittanbieter-CDN statt.')}
+${p('Dieser Simulator ist eine rein statische Webanwendung. Es werden <b>keine Tracking-Tools</b> eingesetzt, <b>keine Analyse-Dienste</b> genutzt und <b>keine personenbezogenen Daten aktiv erhoben</b> oder verarbeitet. S\u00e4mtliche Schriftarten (Oswald, Source Serif 4, Space Mono) werden lokal vom Server ausgeliefert; es findet keine Verbindung zu Google Fonts oder anderen Drittanbieter-CDN statt.')}
+
+${sh('2a. Technisch notwendige Cookies')}
+${p('Zur Speicherung Ihrer Sprachauswahl (Deutsch/Englisch) wird ein einzelnes, technisch notwendiges Cookie im Browser abgelegt:')}
+<ul style="font-family:'Source Serif 4',Georgia,serif;font-size:14px;line-height:1.7;color:#2D2D2D;margin:0 0 8px;padding-left:22px;">
+<li><b>Name:</b> <code>sbm23_lang</code></li>
+<li><b>Inhalt:</b> <code>en</code> oder <code>de</code></li>
+<li><b>Zweck:</b> Erinnerung der vom Nutzer aktiv gew\u00e4hlten Oberfl\u00e4chensprache</li>
+<li><b>Speicherdauer:</b> 365 Tage</li>
+<li><b>Rechtsgrundlage:</b> \u00a7 25 Abs. 2 Nr. 2 TTDSG (unbedingt erforderlich, um einen vom Nutzer ausdr\u00fccklich gew\u00fcnschten Dienst \u2014 die Anzeige in der gew\u00e4hlten Sprache \u2014 bereitzustellen); keine Einwilligung erforderlich.</li>
+</ul>
+${p('Dar\u00fcber hinaus wird dieselbe Information zus\u00e4tzlich im Browser-<code>localStorage</code> abgelegt (gleicher Zweck, gleiche Rechtsgrundlage). Cookie und Storage k\u00f6nnen jederzeit \u00fcber die Browser-Einstellungen gel\u00f6scht werden.')}
 
 ${sh('3. Server-Logfiles durch den Hoster')}
 ${p('Beim Aufruf dieser Website werden durch den Hosting-Provider (GitHub Pages, betrieben von GitHub Inc., 88 Colin P Kelly Jr St, San Francisco, CA 94107, USA) automatisch Informationen in Server-Logfiles erfasst, die Ihr Browser \u00fcbermittelt. Dies sind typischerweise:')}
@@ -990,7 +1017,18 @@ ${p('The controller within the meaning of the GDPR is:')}
 ${p('Frank Goeltl<br>Roemersteinstr. 9<br>73230 Kirchheim unter Teck<br>Germany<br>Email: <a href="mailto:frg@silverballmania.com" style="color:#D42A80;">frg@silverballmania.com</a>')}
 
 ${sh('2. Scope of Data Processing')}
-${p('This simulator is a purely static web application. On this site we set <b>no cookies</b>, use <b>no tracking tools</b>, use <b>no analytics services</b> and do <b>not actively collect or process personal data</b>. All fonts (Oswald, Source Serif 4, Space Mono) are served locally from our server; no connection is made to Google Fonts or any other third-party CDN.')}
+${p('This simulator is a purely static web application. We use <b>no tracking tools</b>, <b>no analytics services</b>, and do <b>not actively collect or process personal data</b>. All fonts (Oswald, Source Serif 4, Space Mono) are served locally from our server; no connection is made to Google Fonts or any other third-party CDN.')}
+
+${sh('2a. Strictly Necessary Cookies')}
+${p('To remember your language selection (German/English), a single strictly necessary cookie is stored in your browser:')}
+<ul style="font-family:'Source Serif 4',Georgia,serif;font-size:14px;line-height:1.7;color:#2D2D2D;margin:0 0 8px;padding-left:22px;">
+<li><b>Name:</b> <code>sbm23_lang</code></li>
+<li><b>Value:</b> <code>en</code> or <code>de</code></li>
+<li><b>Purpose:</b> remembers the UI language you actively selected</li>
+<li><b>Retention:</b> 365 days</li>
+<li><b>Legal basis:</b> \u00a7 25(2) No. 2 TTDSG / Art. 6(1)(f) GDPR \u2014 strictly necessary to provide the service (UI in your chosen language) that you explicitly requested. No consent required.</li>
+</ul>
+${p('The same value is additionally mirrored in browser <code>localStorage</code> for the same purpose. Cookie and storage can be cleared at any time via your browser settings.')}
 
 ${sh('3. Server Log Files by the Hosting Provider')}
 ${p('When this website is visited, the hosting provider (GitHub Pages, operated by GitHub Inc., 88 Colin P Kelly Jr St, San Francisco, CA 94107, USA) automatically records information in server log files that your browser transmits. This typically includes:')}
