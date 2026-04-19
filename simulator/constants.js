@@ -1,3 +1,7 @@
+// SBM23 Browser Simulator — Copyright (C) 2026 Frank Goeltl, Dick Hamill and contributors.
+// Licensed under the GNU General Public License v3.0 or later.
+// This program comes with ABSOLUTELY NO WARRANTY. See the LICENSE file for details.
+
 // Switch IDs (from SBM23.h)
 const SW_KICKER_ROLLOVER=0, SW_HOOP_ROLLOVER=1, SW_TOP_RIGHT=2, SW_TOP_CENTER=3,
   SW_TOP_LEFT=4, SW_CREDIT_RESET=5, SW_TILT=6, SW_OUTHOLE=7,

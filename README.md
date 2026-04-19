@@ -1,5 +1,15 @@
 # SBM23
 All new code for a classic pinball machine. With an Arduino connected to the MPU, this code will run on a Silverball Mania pinball machine (1980).  
+
+## License
+This project is licensed under the **GNU General Public License v3.0 or later** (GPL-3.0-or-later). See the [`LICENSE`](LICENSE) file for the full text.
+
+- The Arduino sketch (`SBM23.ino`, `SBM23.h`, etc.) and the browser simulator (`simulator/`) are distributed under GPL-3.0-or-later.
+- `RPU.cpp` / `RPU.h` / `SelfTestAndAudit.*` are from the Retro Pin Upgrade (RPU) framework by Dick Hamill, also GPL-3.0-or-later. See https://github.com/RetroPinUpgrade.
+- Self-hosted fonts under `simulator/fonts/` (Oswald, Source Serif 4, Space Mono) are distributed under the SIL Open Font License 1.1.
+
+Because this project is derived from GPL-3.0 code, any fork, redistribution, or derivative work must also be released under a GPL-3.0-compatible license. Trademarks for original machines (Silverball Mania, Bally) remain property of their respective owners and are referenced solely to identify the source machine.
+
   
 ## How to build this for your machine  
 1) build or buy a board to interface an Arduino MEGA 2560 PRO with the MPU processor socket or J5 connector  

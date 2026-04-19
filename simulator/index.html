@@ -1,11 +1,20 @@
 <!DOCTYPE html>
+<!--
+  SBM23 Browser Simulator — Copyright (C) 2026 Frank Goeltl, Dick Hamill and contributors.
+  Licensed under the GNU General Public License v3.0 or later.
+  This program comes with ABSOLUTELY NO WARRANTY. See the LICENSE file for details.
+-->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Silverball Mania - Pinball Simulator</title>
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,600;0,700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
+/* Self-hosted fonts (DSGVO: no third-party requests) */
+@font-face { font-family:'Oswald'; font-style:normal; font-weight:400 700; font-display:swap; src:url('fonts/oswald.woff2') format('woff2'); }
+@font-face { font-family:'Source Serif 4'; font-style:normal; font-weight:400 700; font-display:swap; src:url('fonts/source-serif-4.woff2') format('woff2'); }
+@font-face { font-family:'Space Mono'; font-style:normal; font-weight:400; font-display:swap; src:url('fonts/space-mono-regular.woff2') format('woff2'); }
+@font-face { font-family:'Space Mono'; font-style:normal; font-weight:700; font-display:swap; src:url('fonts/space-mono-bold.woff2') format('woff2'); }
 :root {
   --cosmic-black: #0A0A0A;
   --void-black: #1A1A1A;
@@ -23,8 +32,36 @@
   --red: #CC2233;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
-body { background:#FAFAF7; color:var(--void-black); font-family:'Source Serif 4',Georgia,serif; display:flex; justify-content:center; overflow-x:hidden; }
+body { background:#FAFAF7; color:var(--void-black); font-family:'Source Serif 4',Georgia,serif; overflow-x:hidden; }
+
+/* === TOP NAV === */
+#topnav {
+  background:#fff; border-bottom:1px solid rgba(0,0,0,0.06);
+  padding:14px 28px; display:flex; align-items:center; gap:28px;
+  box-shadow:0 1px 2px rgba(0,0,0,0.02);
+}
+#topnav .brand {
+  font-family:'Oswald',sans-serif; font-size:16px; font-weight:700;
+  text-transform:uppercase; letter-spacing:0.08em; color:var(--cosmic-black);
+}
+#topnav .brand .accent { color:var(--magenta); }
+#topnav nav { display:flex; gap:4px; margin-left:auto; }
+#topnav .nav-link {
+  font-family:'Oswald',sans-serif; font-size:12px; font-weight:600;
+  text-transform:uppercase; letter-spacing:0.08em; color:var(--pewter);
+  background:none; border:none; padding:8px 16px; cursor:pointer;
+  border-radius:6px; transition:all 0.15s;
+}
+#topnav .nav-link:hover { color:var(--magenta); background:rgba(212,42,128,0.05); }
+#topnav .nav-link.active { color:var(--magenta); background:rgba(212,42,128,0.08); }
+
+.view { display:none; }
+.view.active { display:block; }
+
+#view-simulator.active { display:flex; justify-content:center; }
 #app { display:flex; gap:24px; padding:24px; max-width:1400px; }
+
+.page-wrap { max-width:760px; margin:0 auto; padding:48px 32px; }
 
 /* === CONTROL PANEL (left) === */
 #playfield {
@@ -115,9 +152,78 @@ body { background:#FAFAF7; color:var(--void-black); font-family:'Source Serif 4'
 #log .score { color:var(--amber); }
 #log .event { color:#1a8a6a; }
 #log .mode { color:var(--magenta); }
+
+/* === FOOTER === */
+#footer {
+  background:#fff; border-top:1px solid rgba(0,0,0,0.06);
+  padding:20px 28px; display:flex; align-items:center; gap:20px;
+  flex-wrap:wrap; margin-top:32px;
+  font-family:'Space Mono',monospace; font-size:11px;
+  color:var(--pewter); letter-spacing:0.04em;
+}
+#footer .copyright { margin-right:auto; }
+#footer .footer-links { display:flex; gap:4px; }
+#footer .footer-link {
+  font-family:'Oswald',sans-serif; font-size:11px; font-weight:600;
+  text-transform:uppercase; letter-spacing:0.08em; color:var(--pewter);
+  background:none; border:none; padding:6px 10px; cursor:pointer;
+  border-radius:6px; transition:all 0.15s;
+}
+#footer .footer-link:hover { color:var(--magenta); background:rgba(212,42,128,0.05); }
+#footer .footer-link.active { color:var(--magenta); }
+
+/* === RESPONSIVE === */
+/* Mobile notice for the simulator view — hidden on desktop */
+#mobile-sim-notice { display:none; }
+
+@media (max-width: 960px) {
+  /* Footer */
+  #footer { padding:16px 16px; gap:10px; font-size:10px; }
+  #footer .copyright { flex-basis:100%; margin-right:0; }
+
+  /* Top nav: tighter padding, allow wrapping */
+  #topnav { padding:10px 16px; gap:12px; flex-wrap:wrap; }
+  #topnav nav { gap:2px; }
+  #topnav .nav-link { padding:6px 10px; font-size:11px; letter-spacing:0.06em; }
+
+  /* Landing / About / Imprint / Privacy pages */
+  .page-wrap { padding:32px 20px; }
+  #home-content section { padding-left:20px !important; padding-right:20px !important; }
+  #home-content h1 { font-size:36px !important; }
+  #home-content h2 { font-size:22px !important; }
+  #home-content p { font-size:15px !important; }
+
+  /* Simulator view — replace app with a mobile notice */
+  #view-simulator #app { display:none !important; }
+  #view-simulator #mobile-sim-notice {
+    display:block; max-width:560px; margin:0 auto;
+    padding:64px 24px; text-align:center;
+  }
+}
 </style>
 </head>
 <body>
+
+<div id="topnav">
+  <div class="brand">Classic<span class="accent">Code</span></div>
+  <nav>
+    <button class="nav-link" data-view="home" onclick="showView('home')" data-i18n="nav.home">Home</button>
+    <button class="nav-link" data-view="simulator" onclick="showView('simulator')" data-i18n="nav.simulator">Simulator</button>
+    <button class="nav-link" data-view="rules" onclick="showView('rules')" data-i18n="nav.rules">Rules</button>
+    <button class="nav-link" data-view="about" onclick="showView('about')" data-i18n="nav.about">About</button>
+  </nav>
+  <div id="lang-toggle" style="display:inline-flex;border:1px solid rgba(0,0,0,0.12);border-radius:6px;overflow:hidden;margin-left:8px;">
+    <button data-lang="en" onclick="setLang('en')" style="font-family:'Oswald',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;padding:6px 12px;border:none;border-right:1px solid rgba(0,0,0,0.12);background:rgba(0,0,0,0.02);color:var(--pewter);cursor:pointer;">EN</button>
+    <button data-lang="de" onclick="setLang('de')" style="font-family:'Oswald',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;padding:6px 12px;border:none;background:rgba(0,0,0,0.02);color:var(--pewter);cursor:pointer;">DE</button>
+  </div>
+</div>
+
+<div id="view-home" class="view active">
+  <div id="home-content"></div>
+</div>
+
+<div id="view-simulator" class="view">
+<div id="mobile-sim-notice"></div>
 <div id="app">
 
 <!-- SWITCH & LAMP PANEL -->
@@ -135,8 +241,6 @@ body { background:#FAFAF7; color:var(--void-black); font-family:'Source Serif 4'
         <button data-mode="original" onclick="setRulesMode('original')" style="font-family:'Oswald',sans-serif;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;padding:6px 14px;border:none;border-right:1px solid rgba(0,0,0,0.12);background:rgba(0,0,0,0.02);color:var(--pewter);cursor:pointer;">1980</button>
         <button data-mode="classic"  onclick="setRulesMode('classic')"  style="font-family:'Oswald',sans-serif;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;padding:6px 14px;border:none;background:rgba(0,0,0,0.02);color:var(--pewter);cursor:pointer;">SBM23</button>
       </div>
-      <button onclick="document.getElementById('rules-modal').style.display='flex'" style="font-family:'Oswald',sans-serif;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;padding:6px 16px;border-radius:6px;border:1px solid rgba(0,0,0,0.12);background:rgba(0,0,0,0.02);color:var(--pewter);cursor:pointer;">Open Rules</button>
-      <button onclick="document.getElementById('about-modal').style.display='flex'" style="font-family:'Oswald',sans-serif;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;padding:6px 16px;border-radius:6px;border:1px solid rgba(0,0,0,0.12);background:rgba(0,0,0,0.02);color:var(--pewter);cursor:pointer;">About</button>
     </div>
   </div>
 
@@ -184,22 +288,33 @@ body { background:#FAFAF7; color:var(--void-black); font-family:'Source Serif 4'
 
 </div>
 </div>
+</div>
+<!-- /view-simulator -->
 
-<!-- Rules Modal -->
-<div id="rules-modal" style="display:none;position:fixed;inset:0;z-index:100;background:#fff;overflow-y:auto;">
-  <button onclick="document.getElementById('rules-modal').style.display='none'" style="position:fixed;top:16px;right:16px;z-index:101;font-family:'Oswald',sans-serif;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;padding:8px 18px;border-radius:6px;border:1px solid rgba(0,0,0,0.12);background:#FAFAF7;color:#D42A80;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.08);">&larr; Back to Simulator</button>
-  <div style="max-width:760px;margin:0 auto;padding:48px 32px;">
-    <div id="rules-content"></div>
-  </div>
+<div id="view-rules" class="view">
+  <div class="page-wrap"><div id="rules-content"></div></div>
 </div>
 
-<!-- About Modal -->
-<div id="about-modal" style="display:none;position:fixed;inset:0;z-index:100;background:#fff;overflow-y:auto;">
-  <button onclick="document.getElementById('about-modal').style.display='none'" style="position:fixed;top:16px;right:16px;z-index:101;font-family:'Oswald',sans-serif;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;padding:8px 18px;border-radius:6px;border:1px solid rgba(0,0,0,0.12);background:#FAFAF7;color:#D42A80;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.08);">&larr; Back to Simulator</button>
-  <div style="max-width:760px;margin:0 auto;padding:48px 32px;">
-    <div id="about-content"></div>
-  </div>
+<div id="view-about" class="view">
+  <div class="page-wrap"><div id="about-content"></div></div>
 </div>
+
+<div id="view-imprint" class="view">
+  <div class="page-wrap"><div id="imprint-content"></div></div>
+</div>
+
+<div id="view-privacy" class="view">
+  <div class="page-wrap"><div id="privacy-content"></div></div>
+</div>
+
+
+<footer id="footer">
+  <div class="copyright">&copy; <span id="footer-year"></span> Frank Goeltl &middot; ClassicCode &middot; Built with Claude Code</div>
+  <div class="footer-links">
+    <button class="footer-link" data-view="imprint" onclick="showView('imprint')" data-i18n="nav.imprint">Imprint</button>
+    <button class="footer-link" data-view="privacy" onclick="showView('privacy')" data-i18n="nav.privacy">Privacy</button>
+  </div>
+</footer>
 
 <script src="constants.js"></script>
 <script src="state.js"></script>

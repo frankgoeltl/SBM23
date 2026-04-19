@@ -1,3 +1,7 @@
+// SBM23 Browser Simulator — Copyright (C) 2026 Frank Goeltl, Dick Hamill and contributors.
+// Licensed under the GNU General Public License v3.0 or later.
+// This program comes with ABSOLUTELY NO WARRANTY. See the LICENSE file for details.
+
 // Global game state object
 const G = {
   // Core state
@@ -102,6 +106,9 @@ const G = {
 
   // Rules mode: 'original' = 1980 Bally, 'classic' = SBM23, 'frg' = Original + spinner jackpot
   rulesMode: 'frg',
+
+  // UI language for Home/About/Imprint/Privacy (simulator UI stays English)
+  lang: 'en',
 
   // Log
   log: [],

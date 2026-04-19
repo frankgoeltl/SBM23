@@ -1,3 +1,7 @@
+// SBM23 Browser Simulator — Copyright (C) 2026 Frank Goeltl, Dick Hamill and contributors.
+// Licensed under the GNU General Public License v3.0 or later.
+// This program comes with ABSOLUTELY NO WARRANTY. See the LICENSE file for details.
+
 // Lamp management system
 function setLamp(id, on, dim, flashMs) {
   // Original mode: no flashing, lamps are on or off
